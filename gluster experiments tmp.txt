@@ -1,0 +1,58 @@
+for i in isos rhev-exports vmstore; do mkdir /gluster/$i ; gluster volume create $i replica 2 transport tcp 10.0.139.11:/gluster/$i/ 10.0.139.12:/gluster/$i/ ; gluster volume reset all; gluster volume set $i group virt; gluster volume set $i storage.owner-uid 36 ; gluster volume set $i storage.owner-gid 36 ; gluster volume set $i nfs.disable off ; gluster volume set $i performance.cache-size 4GB ; gluster volume set $i cluster.server-quorum-type server ; gluster volume set all cluster.server-quorum-ratio 51% ;gluster volume set $i quorum-type auto; gluster volume start $i; done
+
+
+
+
+
+yum install -y glusterfs-3.6.0.53-1.el6rhs.x86_64 glusterfs-api glusterfs fuse glusterfs-geo-replication-3.6.0.53-1.el6rhs.x86_64 rdma glusterfs-server-3.6.0.53-1.el6rhs.x86_64 glusterfs-libs-3.6.0.53-1.el6rhs.x86_64 glusterfs-cli-3.6.0.53-1.el6rhs.x86_64 libguestfs-1:1.20.11-11.el6.x86_64 libguestfs-tools-c-1:1.20.11-11.el6.x86_64 libvirt-0.10.2-46.el6_6.3.x86_64 libvirt-lock-sanlock-0.10.2-46.el6_6.3.x86_64 qemu-img-2:0.12.1.2-2.448.el6_6.x86_64 qemu-kvm-2:0.12.1.2-2.448.el6_6.x86_64 redhat-storage server-3.0.4.0-1.el6rhs.noarch swiftonfile-1.13.1-2.el6rhs.noarch vdsm-4.16.8.1-6.2.el6rhs.x86_64 vdsm-gluster-4.16.8.1-6.2.el6rhs.noarch vdsm-reg-4.16.8.1-6.2.el6rhs.noarch redhat-storage-server.noarch
+
+
+
+___________________________________
+
+
+umount -l /gluster
+rmdir /gluster*
+sed -i '/gluster/d' /etc/fstab
+mkdir /gluster1 /gluster2
+parted -s /dev/sdb mklabel gpt
+parted -s -- /dev/sdb mkpart primary xfs 1 50%
+parted -s -- /dev/sdb mkpart primary xfs 50% 100%
+lsblk
+mkfs.xfs -f -i size=512 -n size=8192 /dev/sdb1 -L gluster1
+mkfs.xfs -f -i size=512 -n size=8192 /dev/sdb2 -L gluster2
+lsblk
+echo 'LABEL=gluster1           /gluster1                xfs     defaults        0 0' >> /etc/fstab
+echo 'LABEL=gluster2           /gluster2                xfs     defaults        0 0' >> /etc/fstab
+mount -a
+lsblk
+
+
+for i in isos rhev-exports vmstore; do mkdir /gluster1/$i /gluster2/$i ; gluster volume create $i stripe 2 replica 2 transport tcp 10.0.139.11:/gluster1/$i/ 10.0.139.12:/gluster1/$i/ 10.0.139.11:/gluster2/$i/ 10.0.139.12:/gluster2/$i/ ; gluster volume reset all; gluster volume set $i group virt; gluster volume set $i storage.owner-uid 36 ; gluster volume set $i storage.owner-gid 36 ; gluster volume set $i nfs.disable off ; gluster volume set $i performance.cache-size 4GB ; gluster volume set $i cluster.server-quorum-type server ; gluster volume set $i quorum-type auto; gluster volume start $i; done
+
+
+
+____________________
+
+umount -l /gluster*
+rmdir /gluster*
+sed -i '/gluster/d' /etc/fstab
+parted -s /dev/sdb mklabel gpt
+parted -s -- /dev/sdb mkpart primary xfs 1 -1
+mkdir /gluster
+mkfs.xfs -f -i size=512 -n size=8192 /dev/sdb1 -L gluster
+/bin/cp -f /etc/fstab /etc/fstab.bk
+echo 'LABEL=gluster           /gluster                xfs     defaults        0 0' >> /etc/fstab
+mount -a
+
+service glusterd start
+gluster peer probe 10.0.13.12
+gluster peer probe 10.0.13.11
+service glusterd restart
+
+
+for i in isos rhev-exports vmstore; do mkdir /gluster/$i ; gluster volume create $i replica 2 transport tcp 10.0.13.11:/gluster/$i/ 10.0.13.12:/gluster/$i/ ; gluster volume reset all; gluster volume set $i group virt; gluster volume set $i storage.owner-uid 36 ; gluster volume set $i storage.owner-gid 36 ; gluster volume set $i nfs.disable off ; gluster volume set $i performance.cache-size 4GB ; gluster volume set $i cluster.server-quorum-type server ; gluster volume set $i quorum-type auto; gluster volume start $i; done
+
+
+
+

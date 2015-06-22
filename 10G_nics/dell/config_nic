@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "making backup of config"
+for i in $(seq 2 3)
+do
+        for h in $(seq 1 2)
+                do echo p"$i"p$h;cp /etc/sysconfig/network-scripts/ifcfg-p"$i"p$h /root/ifcfg-p"$i"p$h.bk
+        done
+done
+u=$(hostname -s | cut -c 2-)
+echo "doing sed....."
+for i in $(seq 2 3); do for c in $(seq 1 1); do echo -e "p"$i"p$c:\n";d=$(expr 3 + "$c");
+                sed -i -e 's/BOOTPROTO=dhcp/BOOTPROTO=none/g' -e 's/ONBOOT=no/ONBOOT=yes/g' -e 's/\"//g' -e '/IPV6/d' -e '/GATEWAY/d' -e '/NETMASK/d' -e '/IPADDR/d' -e '/PREFIX/d' -e '/DNS/d' -e '/DOMAIN/d'             /etc/sysconfig/network-scripts/ifcfg-p"$i"p$c;
+                sed -i -e '$s/$/\nGATEWAY=10.0.139.1\nNETMASK=255.255.255.0\nIPADDR=10.0.139.4'"$u"'' /etc/sysconfig/network-scripts/ifcfg-p"$i"p$c;
+                echo;
+        done;
+done
+echo "restarting network..."
+systemctl restart network

@@ -1,0 +1,66 @@
+#version=RHEL7
+install
+reboot --eject
+text
+
+# System authorization information
+ auth --enableshadow --passalgo=sha512
+# # Use network installation
+ url --url="ftp://10.0.13.8/pub/rhel7"
+
+lang en_US.UTF-8
+keyboard us
+
+# Network information
+network  --bootproto=static --device=enp97s0f0 --gateway=10.0.13.1 --ip=10.0.13.10 --nameserver=10.0.13.10,10.0.13.31,8.8.8.8 --netmask=255.255.255.0 --activate
+network  --hostname=ipa2.partshop.lab24.co
+# Root password
+rootpw --iscrypted passwdgoeshere
+firewall --service=ssh
+authconfig --enableshadow --passalgo=sha512
+selinux --enforcing
+timezone --utc America/New_York
+bootloader --location=mbr --driveorder=vda --append="crashkernel=auto rhgb quiet"
+# The following is the partition information you requested
+# Note that any partitions you deleted are not expressed
+# here so unless you clear all partitions first, this is
+# not guaranteed to work
+clearpart --linux --drives=vda
+
+
+part /boot --fstype=ext4 --size=500
+part pv.253002 --grow --size=1
+volgroup vg_ipa2 --pesize=4096 pv.253002
+logvol / --fstype=ext4 --name=lv_root --vgname=vg_ipa2 --grow --size=1024 --maxsize=51200
+logvol swap --name=lv_swap --vgname=vg_ipa2 --grow --size=2120 --maxsize=2120
+
+
+%packages
+@base
+@client-mgmt-tools
+@console-internet
+@core
+@debugging
+@directory-client
+@identity-management-server
+@java-platform
+@network-file-system-client
+@performance
+@perl-runtime
+@server-platform
+@server-policy
+pax
+python-dmidecode
+oddjob
+sgpio
+device-mapper-persistent-data
+samba-winbind
+certmonger
+openldap-clients
+pam_krb5
+krb5-workstation
+ldapjdk
+slapi-nis
+perl-DBD-SQLite
+perl-Mozilla-LDAP
+%end

@@ -1,0 +1,12 @@
+#RHEL/Cent 5
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+yum install -y atop
+yum remove epel-release
+
+#RHEL/Cent6
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+#RHEL/Cent7
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+
+for i in {3..6}; do ssh root@10.0.13.4$i "rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm && yum install atop -y" ; done

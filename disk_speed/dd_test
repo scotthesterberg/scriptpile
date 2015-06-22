@@ -1,0 +1,8 @@
+write
+dd if=/dev/zero of=/mnt/iotest bs=8k count=100000
+
+dd if=/dev/zero of=/mnt/iotest bs=1M count=1000
+
+
+read
+dd if=/mnt/iotest of=/dev/null bs=1M count=1000

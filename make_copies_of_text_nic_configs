@@ -1,0 +1,1 @@
+for i in {2..3}; do for c in {1..2}; do cp ifcfg-p2p1 ifcfg-p3p2; done; done

@@ -1,0 +1,1 @@
+for i in $(seq 2 8); do echo $i;scp disable_10G root@10.0.13.4$i:/tmp/disable_10G;echo; done

@@ -1,0 +1,1 @@
+for i in $(seq 1 3); do i=$(expr 1 + $i); echo $i;ssh root@10.0.13.2$i 'bash /tmp/config_nic';echo; done

@@ -1,0 +1,31 @@
+touch /.unconfigured
+rm -i /etc/ssh/ssh_host_*
+vim /etc/sysconfig/network
+vm /etc/sysconfig/network
+vi /etc/sysconfig/network
+ls /etc/udev/rules.d/
+ls /etc/udev/rules.d/70-persistent-*
+rm /etc/udev/rules.d/70-persistent-*
+vim /etc/sysconfig/network-scripts/ifcfg-*
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+vi /etc/sysconfig/network-scripts/ifcfg-lo
+init 0
+vi /etc/sysconfig/network
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+service network restart
+ping 10.0..13.1
+ping 10.0.13.1
+ping fuckyou.com
+clear
+exit
+reboot
+exit
+ip addr
+rhn_register
+rhn-channel --add --channel=rhel-x86_64-rhev-agent-6-server
+yum search ipa-server
+yum clean all && yum -y upgrade && yum -y install vim
+yum search rhev
+yum -y install rhev-agent
+reboot
+

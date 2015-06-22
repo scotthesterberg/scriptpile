@@ -1,0 +1,51 @@
+#This set of commands will help setup a new jumpiest on a VM
+
+
+#the below command should be run on a machine with your existing keys if they are available
+scp .ssh/id_rsa* mashuser@10.0.133.112:~/
+
+#ssh to box
+ssh mashuser@10.0.133.122
+#or
+./my_instance
+
+
+#on the jumphost
+sudo -i
+yum update -y
+yum install -y epel-release
+yum groupinstall -y “Fonts” 
+yum -y groups install xfce
+yum groupinstall -y “Gnome Desktop”
+yum install -y atop vim git xrdp tigervnc-server system-storage-manager parted gparted 
+yum install -y ftp://fr2.rpmfind.net/linux/fedora/linux/updates/22/x86_64/x/xrdp-0.6.1-10.fc22.x86_64.rpm
+
+
+
+systemctl start xrdp
+systemctl enable xrdp
+
+firewall-cmd --permanent --zone=public --add-port=3389/tcp
+firewall-cmd --reload
+chcon --type=bin_t /usr/sbin/xrdp
+chcon --type=bin_t /usr/sbin/xrdp-sesman
+
+
+#firewall-cmd --permanent --zone=public --add-service vnc-server
+#su user
+#vncserver passwd
+#vncserver
+#
+
+
+
+
+
+
+yum install -y firefox docker-io virt-manager spice-gtk spice-xpi
+
+
+
+
+
+

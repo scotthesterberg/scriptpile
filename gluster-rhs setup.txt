@@ -1,0 +1,86 @@
+gluster/rhs setup
+
+ip addr
+ping 10.0.139.11 -c 4
+ping 10.0.139.12 -c 4
+
+yum update -y -q &
+yum install -y epel-release
+yum install -y atop vim parted
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+yum install -y atop
+yum remove -y epel-release
+
+#for reinstall
+##########
+yum install -y mlocate
+service glusterd stop
+#updatedb
+sed -i '/gluster/d' /etc/fstab
+yum remove glusterfs glusterfs—cli glusterfs-libs -y
+#locate gluster
+umount -l /gluster
+rm -rf /usr/share/glusterfs/ /var/lib/glusterd/
+#find / -name gluster | rm -rf
+
+########
+
+
+
+subscription-manager list --available
+subscription-manager repos --enable=rhs-3-for-rhel-6-server-rpms
+yum install -y glusterfs-3.6.0.53-1.el6rhs.x86_64 glusterfs-api-3.6.0.53-1.el6rhs.x86_64 glusterfs fuse-3.6.0.53-1.el6rhs.x86_64 glusterfs-geo-replication-3.6.0.53-1.el6rhs.x86_64 glusterfs rdma-3.6.0.53-1.el6rhs.x86_64 glusterfs-server-3.6.0.53-1.el6rhs.x86_64 libguestfs-1:1.20.11-11.el6.x86_64 libguestfs-tools-c-1:1.20.11-11.el6.x86_64 libvirt-0.10.2-46.el6_6.3.x86_64 libvirt-lock-sanlock-0.10.2-46.el6_6.3.x86_64 qemu-img-2:0.12.1.2-2.448.el6_6.x86_64 qemu-kvm-2:0.12.1.2-2.448.el6_6.x86_64 redhat-storage server-3.0.4.0-1.el6rhs.noarch swiftonfile-1.13.1-2.el6rhs.noarch vdsm-4.16.8.1-6.2.el6rhs.x86_64 vdsm-gluster-4.16.8.1-6.2.el6rhs.noarch vdsm-reg-4.16.8.1-6.2.el6rhs.noarch redhat-storage-server.noarch 0:3.0.4.0-1.el6rhs
+
+
+
+#not needed anymore
+#checkout current feel system layout, remove excessively large /home dir
+###############
+umount /home
+lsblk
+lvdisplay
+lvremove -f /dev/vg_gluster1/lv_home
+lvremove -f /dev/vg_gluster2/lv_home
+#REMOVE from fstab!!!
+/bin/cp -f /etc/fstab /etc/fstab.bk
+sed -i '/lv_home/d' /etc/fstab
+lvdisplay
+lvextend -L+26G /dev/vg_gluster1/lv_swap
+lvextend -L+26G /dev/vg_gluster2/lv_swap
+lvextend -L+50G /dev/vg_gluster1/lv_root
+lvextend -L+50G /dev/vg_gluster2/lv_root
+lsblk
+###################
+
+
+#format cluster brick
+umount -l /gluster*
+rmdir /gluster*
+sed -i '/gluster/d' /etc/fstab
+parted -s /dev/sdb mklabel gpt
+parted -s -- /dev/sdb mkpart primary xfs 1 -1
+mkdir /gluster
+mkfs.xfs -f -i size=512 -n size=8192 /dev/sdb1 -L gluster
+/bin/cp -f /etc/fstab /etc/fstab.bk
+echo 'LABEL=gluster           /gluster                xfs     defaults        0 0' >> /etc/fstab
+mount -a
+
+service glusterd start
+gluster peer probe 10.0.139.12
+gluster peer probe 10.0.139.11
+service glusterd restart
+
+
+for i in isos rhev-exports vmstore; do yes | gluster volume stop $i ; yes | gluster volume delete $i ; done
+rm -rf /gluster/*
+service glusterd restart
+mountpoint /gluster
+for i in isos rhev-exports vmstore; do mkdir /gluster/$i ; gluster volume create $i replica 2 transport tcp 10.0.139.11:/gluster/$i/ 10.0.139.12:/gluster/$i/ ; gluster volume reset all; gluster volume set $i group virt; gluster volume set $i storage.owner-uid 36 ; gluster volume set $i storage.owner-gid 36 ; gluster volume set $i nfs.disable off ; gluster volume set $i performance.cache-size 4GB ; gluster volume set $i cluster.server-quorum-type server ; gluster volume set $i quorum-type auto; gluster volume start $i; done
+
+#for i in isos rhev-exports vmstore; do gluster volume set $i performance.cache-size 2GB ; done
+#gluster volume set isos performance.quick-read on
+#gluster volume group virt stop
+
+
+gluster volume status
+

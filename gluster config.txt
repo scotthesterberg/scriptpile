@@ -1,0 +1,86 @@
+Volume Name: isos
+Type: Stripe
+Volume ID: be4e7e76-4951-442b-b778-75d72ccbf25c
+Status: Started
+Snap Volume: no
+Number of Bricks: 1 x 2 = 2
+Transport-type: tcp
+Bricks:
+Brick1: 10.0.139.11:/gluster/isos
+Brick2: 10.0.139.12:/gluster/isos
+Options Reconfigured:
+performance.readdir-ahead: on
+performance.quick-read: off
+performance.read-ahead: off
+performance.io-cache: off
+performance.stat-prefetch: off
+cluster.eager-lock: enable
+network.remote-dio: enable
+cluster.quorum-type: auto
+cluster.server-quorum-type: server
+storage.owner-uid: 36
+storage.owner-gid: 36
+nfs.disable: off
+performance.cache-size: 256MB
+cluster.stripe-coalesce: on
+snap-max-hard-limit: 256
+snap-max-soft-limit: 90
+auto-delete: disable
+ 
+Volume Name: rhev-exports
+Type: Stripe
+Volume ID: 1753df08-f6a9-4d92-8cc2-fd42d12e3c80
+Status: Started
+Snap Volume: no
+Number of Bricks: 1 x 2 = 2
+Transport-type: tcp
+Bricks:
+Brick1: 10.0.139.11:/gluster/rhev-exports
+Brick2: 10.0.139.12:/gluster/rhev-exports
+Options Reconfigured:
+performance.readdir-ahead: on
+performance.quick-read: off
+performance.read-ahead: off
+performance.io-cache: off
+performance.stat-prefetch: off
+cluster.eager-lock: enable
+network.remote-dio: enable
+cluster.quorum-type: auto
+cluster.server-quorum-type: server
+storage.owner-uid: 36
+storage.owner-gid: 36
+nfs.disable: off
+performance.cache-size: 256MB
+cluster.stripe-coalesce: on
+snap-max-hard-limit: 256
+snap-max-soft-limit: 90
+auto-delete: disable
+ 
+Volume Name: vmstore
+Type: Stripe
+Volume ID: 5d8a8328-dff5-4501-9e3a-b41173742075
+Status: Started
+Snap Volume: no
+Number of Bricks: 1 x 2 = 2
+Transport-type: tcp
+Bricks:
+Brick1: 10.0.139.11:/gluster/vmstore
+Brick2: 10.0.139.12:/gluster/vmstore
+Options Reconfigured:
+performance.readdir-ahead: on
+performance.quick-read: off
+performance.read-ahead: off
+performance.io-cache: off
+performance.stat-prefetch: off
+cluster.eager-lock: enable
+network.remote-dio: enable
+cluster.quorum-type: auto
+cluster.server-quorum-type: server
+storage.owner-uid: 36
+storage.owner-gid: 36
+nfs.disable: off
+performance.cache-size: 256MB
+cluster.stripe-coalesce: on
+snap-max-hard-limit: 256
+snap-max-soft-limit: 90
+auto-delete: disable

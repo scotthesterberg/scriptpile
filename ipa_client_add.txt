@@ -1,0 +1,17 @@
+
+###
+#make file out of below commands, name it ipa
+#####
+
+yum -y install ipa-client
+
+ipa-client-install ipa-client-isntall --enable-dns-updates --ssh-trust-dns --mkhomedir -p admin -w ‘password’ -U
+
+authconfig --enablemkhomedir --update
+
+###########
+#run below for loop, you may need to adjust the host names listed
+########
+
+
+for i in $(egrep -o 'd[2-9]$|[[:blank:]][a-z]*$' /etc/hosts) gluster1 gluster2 pxe; do echo $i; cat ipa | ssh -t -o ConnectTimeout=5 root@$i.partshop.lab24.co; done

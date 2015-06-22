@@ -1,0 +1,50 @@
+#version=RHEL7
+install
+reboot --eject
+text
+
+# System authorization information
+auth --enableshadow --passalgo=sha512
+
+# Use network installation
+url --url="ftp://10.0.13.8/pub/rhel7"
+# Run the Setup Agent on first boot
+#firstboot --enable
+#ignoredisk --only-use=sda
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Network information
+network  --bootproto=static --device=em1 --gateway=10.0.13.1 --ip=10.0.13.46 --nameserver=10.0.13.10,10.0.13.31,8.8.8.8,8.8.4.4 --netmask=255.255.255.0 --activate
+network  --bootproto=static --device=p2p1  --ip=10.0.139.46 --nameserver=10.0.13.10,10.0.13.31 --netmask=255.255.255.0 --nodefroute --activate
+network  --hostname=d6.partshop.lab24.co
+# Root password
+rootpw --iscrypted passwdgoeshere
+# System timezone
+timezone America/New_York --isUtc --ntpservers=ipa2.partshop.lab24.co,ipa1.partshop.lab24.co
+# System bootloader configuration
+bootloader --location=mbr --boot-drive=sda
+autopart --type=lvm
+# Partition clearing information
+clearpart --all --initlabel --drives=sda
+
+repo --name="RHEL7" --baseurl=ftp://10.0.13.8/pub/rhel7
+
+%packages
+@core
+wget
+vim
+vim-common
+bind-utils
+%end
+
+%post
+# configure resolv.conf
+mv /etc/resolv.conf /etc/resolv.conf.orig.$(date +%s)
+touch /etc/resolv.conf
+echo "domain partshop.lab24.co" >> /etc/resolv.conf
+echo "search partshop.lab24.co lab24.co" >> /etc/resolv.conf
+echo -e "nameserver 10.0.13.10\nnameserver 10.0.13.31\nnameserver 8.8.8.8\nnameserver 8.8.4.4" >> /etc/resolv.conf
+%end

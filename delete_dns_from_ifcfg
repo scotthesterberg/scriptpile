@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i -e '/DNS/d' -e '/IPV6/d' -e '/DOMAIN/d' /etc/sysconfig/network-scripts/ifcfg-*

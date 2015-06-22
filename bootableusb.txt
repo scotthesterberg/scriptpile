@@ -1,0 +1,4 @@
+diskutil list
+diskutil unmountDisk /dev/disk1
+hdiutil convert -format UDRW -o ~/Downloads/rhel-server-7.1-x86_64-dvd.img ~/Downloads/rhel-server-7.1-x86_64-dvd.iso
+sudo dd if=~/Downloads/rhel-server-7.1-x86_64-dvd.img of=/dev/rdisk1 bs=1m

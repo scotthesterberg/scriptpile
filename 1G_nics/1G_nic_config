@@ -1,0 +1,6 @@
+#!/bin/bash
+cp /etc/sysconfig/network-scripts/ifcfg-em1 /etc/sysconfig/network-scripts/ifcfg-em1.bk
+i=$(hostname -s | cut -c 2-)
+sed -i -e 's/BOOTPROTO=dhcp/BOOTPROTO=none/g' -e 's/"//g' -e '/IPV6/d' -e '/GATEWAY/d' -e '/NETMASK/d' -e '/IPADDR/d' -e '/PREFIX/d' /etc/sysconfig/network-scripts/ifcfg-em1
+sed -i -e '$s/$/\nGATEWAY=10.0.13.1\nNETMASK=255.255.255.0\nIPADDR=10.0.13.4'"$i"'/' /etc/sysconfig/network-scripts/ifcfg-em1
+systemctl restart network

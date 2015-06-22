@@ -1,0 +1,1 @@
+for i in $(seq 1 8); do echo $i;scp 1G_nic_config root@10.0.13.4$i:/tmp/;echo; done

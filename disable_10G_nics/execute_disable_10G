@@ -1,0 +1,1 @@
+for i in $(seq 2 8); do echo $i;ssh root@10.0.13.4$i 'bash /tmp/disable_10G';echo; done

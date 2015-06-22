@@ -1,0 +1,13 @@
+#changing default openstack users on new instances
+
+#set root passwd
+sudo -i
+passwd
+
+#login as root on console through mash dashboard
+usermod -l newusername currentusername
+usermod -m -d /home/newusername newusername
+
+#edit suders
+sed -i ’s/oldusername/newusername/g’ /etc/sudoers.d/90-cloud-init-users
+

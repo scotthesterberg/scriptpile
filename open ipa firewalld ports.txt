@@ -1,0 +1,11 @@
+PORTS='80 443 389 636 88 464 53'
+for PORT in $PORTS
+do
+        firewall-cmd --permanent --zone=public --add-port=$PORT/tcp
+done
+
+PORTS='88 464 123 53'
+for PORT in $PORTS
+do
+        firewall-cmd --permanent --zone=public --add-port=$PORT/udp
+done
