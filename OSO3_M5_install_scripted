@@ -1,7 +1,6 @@
 #!/bin/bash
 #Start with a CENTOS VM minimal install
-#run this script as root
-#setup vm user as described in openstack user change script
+#run this script as root on both the Master and Node for openshift
 
 #PLEASE SET BELOW VARIABLES!
 fqdn=putyourfqdnhere
@@ -12,7 +11,7 @@ nameserver3=nameserverip
 ipauser=ipausername
 ipapass=ipauserpassword
 
-
+#Define Text Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -82,6 +81,8 @@ if [ -f ~/.ssh/id_rsa ]; then
 	printf "\n\n${YELLOW}ssh-keys exist, not creating new ones${NC}\n\n"
 else
 	printf "\n\n${YELLOW}Generating ssh-keys${NC}\n\n"
+	#echo statement will overwrite sshkey if it exists
+	#-N answers with blank for key password
 	echo -e  'y\n' | ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
 	cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 	#ssh-copy-id -i ~/.ssh/id_rsa.pub root@nodeip_or_fqdn
@@ -129,14 +130,6 @@ Master(){
 if [[ `hostname -s` = *master* ]]; then
 	printf  "\n\n${GREEN}Looks like we're running on the master, treating this as the OSO M5 master!${NC}\n\n"
 else
-	echo $fqdn_node01 > /etc/hostname
-	sed -i '/HOSTNAME/d' /etc/sysconfig/network
-	echo "HOSTNAME="$(echo $fqdn) >> /etc/sysconfig/network
-	sysctl kernel.hostname=$(echo $fqdn)
-	hostnamectl set-hostname $(echo $fqdn)
-	sed -i 's/PEERDNS="yes"/PEERDNS="no"/g' /etc/sysconfig/network-	scripts/ifcfg-eth0
-	sed -i '/HOSTNAME/d' /etc/sysconfig/network-scripts/ifcfg-eth0
-	echo "DHCP_HOSTNAME="$(echo $fqdn)"" >> /etc/sysconfig/network-	scripts/ifcfg-eth0
 	printf "\n\n${YELLOW}Looks like this is a node, exiting to let ansible do it's thing!${NC}\n\n"
 	exit 0
 fi
@@ -144,21 +137,25 @@ fi
 
 Exit(){
 if [[ $ec != 0 ]]; then 
-	printf "\n\n${RED}Something has gone wrong!${NC}\n\n"
+	printf "\n\n${RED}Something has gone wrong! Error Code: $ec${NC}\n\n"
 	exit $ec 
 fi
 }
 
 
 Oso(){
-printf "\n\n${YELLOW}Getting Origin Installer${NC}\n\n"
+printf "\n\n${YELLOW}Getting Origin M5 Installer${NC}\n\n"
 rm -rf openshift-origin*
 wget https://github.com/openshift/origin/releases/download/v1.0.0/openshift-origin-v1.0.0-67617dd-linux-amd64.tar.gz && tar -xzf openshift-origin-v1.0.0-67617dd-linux-amd64.tar.gz
+ec=$?
+Exit
 git clone https://github.com/openshift/openshift-ansible.git
+ec=$?
+Exit
 }
 
 Fxa(){
-printf "\n\n${YELLOW}Fixing Ansible${NC}\n\n"
+printf "\n\n${YELLOW}Fixing Ansible hosts file${NC}\n\n"
 cp openshift-ansible/inventory/byo/hosts /etc/ansible/hosts
 sed -i "s/.*-master-.*/$fqdn/" /etc/ansible/hosts
 sed -i "s/.*-node.*/$fqdn_node01/" /etc/ansible/hosts
