@@ -1,4 +1,7 @@
+#list the mounted disks, look for your USB drive, do not get this wrong!
 diskutil list
+#unmount the USB drive
 diskutil unmountDisk /dev/disk1
+#copy the iso to the USB drive
 hdiutil convert -format UDRW -o ~/Downloads/rhel-server-7.1-x86_64-dvd.img ~/Downloads/rhel-server-7.1-x86_64-dvd.iso
 sudo dd if=~/Downloads/rhel-server-7.1-x86_64-dvd.img of=/dev/rdisk1 bs=1m
