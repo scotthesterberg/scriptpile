@@ -1,0 +1,15 @@
+if [ $# -ne 2 ]; then
+  echo "*******************************************"
+  echo " Sorry, but I need two arguments to run."
+  echo ""
+  echo " Usage:"
+  echo ""
+  echo " $0 <username> <host ip address>"
+  echo ""
+  echo "*******************************************"
+  exit 1
+fi
+
+cat ~/.ssh/id_rsa.pub | ssh $1@$2 "mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys"
+#cat ~/.ssh/id_rsa.pub | ssh $1@$2 "cat >> ~/.ssh/authorized_keys"
+
